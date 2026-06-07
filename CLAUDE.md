@@ -54,7 +54,7 @@ KBProIDE-Master/
 │   │   ├── Compiler.js         # Stub — not yet implemented
 │   │   ├── components/         # Feature-level Vue components
 │   │   │   ├── board_selector/ # Board selection toolbar widget
-│   │   │   ├── editor/Page.vue # Main editor (1300+ lines: Blockly + Monaco)
+│   │   │   ├── editor/Page.vue # Main editor (~1100 lines: Blockly + Monaco)
 │   │   │   ├── examples/       # Example project selector
 │   │   │   ├── package/        # Package manager UI
 │   │   │   ├── plugin/         # Plugin management UI
@@ -63,16 +63,17 @@ KBProIDE-Master/
 │   │   ├── views/
 │   │   │   ├── page/           # Login, NotFound (404), Deny (403), Error (500)
 │   │   │   ├── dialog/         # PianoDialog, TTSDialog, VariableNamingDialog
-│   │   │   ├── widgets/        # Piano, TreeMenu, Cards, Scrollbars
+│   │   │   ├── widgets/        # Piano, TreeMenu(2), SmoothScrollbar, UserSelectCard
 │   │   │   ├── AppToolbar.vue
 │   │   │   ├── AppFooter.vue
-│   │   │   ├── AppUpdater.vue
 │   │   │   ├── ThemeSettings.vue
+│   │   │   ├── VWidget.vue     # Reusable card-with-slots widget wrapper
 │   │   │   └── Notification.vue
 │   │   ├── plugins/
 │   │   │   └── vuetify.js      # Vuetify plugin setup
 │   │   ├── updater/
-│   │   │   └── DownloadAndExtract.js  # Hot-update download/extraction logic
+│   │   │   ├── AppUpdater.vue          # Hot-update UI (progress, restart prompt)
+│   │   │   └── DownloadAndExtract.js   # Hot-update download/extraction logic
 │   │   └── utils/
 │   │       ├── index.js        # Core utilities: path handling, file ops, Vue loading
 │   │       ├── blockly.js      # Blockly-specific helpers
@@ -83,8 +84,8 @@ KBProIDE-Master/
 │   │       ├── codeformat.js   # Code formatting utilities
 │   │       └── regex-parser.js # URL/regex validation
 │   └── theme/
-│       ├── default.styl        # Main stylesheet (6099 lines)
-│       └── component-design.styl  # Component-specific styles (1539 lines)
+│       ├── default.styl        # Main stylesheet (~270 lines)
+│       └── component-design.styl  # Component-specific styles (~110 lines)
 ├── boards/                 # Git submodules — one per supported board
 ├── platforms/              # Git submodules — Arduino AVR, ESP32, ESP-IDF
 ├── packages/               # Extension packs and tools (clang-format, etc.)
@@ -102,7 +103,7 @@ KBProIDE-Master/
 ├── postcss.config.js       # Autoprefixer
 ├── .eslintrc.js            # ESLint: vue/essential + prettier, babel-eslint parser
 ├── .travis.yml             # CI: test:unit on Node 8 and 10
-└── .gitmodules             # 18 submodule definitions
+└── .gitmodules             # 19 submodule definitions
 ```
 
 ---
@@ -199,7 +200,7 @@ Most state is passed via Vue prototype globals (`$global`) or direct component p
 
 ### Editor Component (`src/engine/components/editor/Page.vue`)
 
-The central component (~1300 lines). It hosts:
+The central component (~1100 lines). It hosts:
 - **Blockly workspace** for visual block programming
 - **Monaco Editor** for text/raw code editing
 - Mode switching between Blockly and Monaco
@@ -227,7 +228,7 @@ Platforms (`platforms/`) provide the toolchain (compiler, uploader) for a hardwa
 
 ### Styling
 
-All styles are written in **Stylus** (`.styl` files). The main stylesheet is `src/theme/default.styl` (6099 lines). Component-specific styles are in `src/theme/component-design.styl`. Do not use plain CSS in new components — use Stylus.
+All styles are written in **Stylus** (`.styl` files). The main stylesheet is `src/theme/default.styl`. Component-specific styles are in `src/theme/component-design.styl`. Do not use plain CSS in new components — use Stylus.
 
 ### Build Output
 
@@ -248,7 +249,9 @@ Extra resources (`boards/`, `platforms/`, `packages/`, `plugins/`) are bundled i
 - **Setup file:** `tests/unit/setup.js`
 - **Coverage:** Disabled by default
 
-Current tests focus on utility functions (`tests/unit/utils/utils.spec.js`) — particularly URL/GitHub validation and regex parsing from `src/engine/utils/regex-parser.js`.
+Current tests focus on utility functions:
+- `tests/unit/utils/utils.spec.js` — URL/GitHub validation and regex parsing from `src/engine/utils/regex-parser.js`
+- `tests/unit/utils/index.spec.js` — string-transform helpers (e.g. `camelActual`) from `src/engine/utils/index.js`
 
 When adding tests, place them in `tests/unit/` mirroring the `src/` path, suffixed with `.spec.js`.
 
@@ -267,7 +270,7 @@ When adding tests, place them in `tests/unit/` mirroring the `src/` path, suffix
 
 ## Git Submodules
 
-The repository has 18 submodules. When updating board or platform code:
+The repository has 19 submodules — boards (`boards/kidbright`, `kbpro`, `kbx`, `kidbright-arduino`, `arduino-uno`, `arduino-nano`, `arduino-mega`, `ipst-wifi`, `openkb`, `kbm5stack`, `ttgo-t-watcher-v1.2`, `ttgo-t-watcher-v1.3`, `ttgo-t8-v1.1`, `ttgo-t8-v1.3`, `ttgo-t8-v1.7`), platforms (`platforms/arduino-avr`, `arduino-esp32`, `esp-idf`), and packages (`packages/kbide-extension-pack`). When updating board or platform code:
 
 ```bash
 # Update all submodules to their latest remote tracking branch
